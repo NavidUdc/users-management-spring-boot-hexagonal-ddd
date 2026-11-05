@@ -6,3 +6,8 @@ target
 *.iml
 *.log
 spec
+
+/.environments/
+/.env
+.environments
+.env

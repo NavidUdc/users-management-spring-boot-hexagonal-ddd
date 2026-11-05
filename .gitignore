@@ -41,3 +41,7 @@ build/
 *.log
 
 /spec/
+
+/.environments/
+/.environments.example/
+.env

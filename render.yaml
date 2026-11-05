@@ -35,3 +35,9 @@ services:
         generateValue: true
       - key: JWT_EXPIRATION_SECONDS
         value: "900"
+      - key: BREVO_API_KEY
+        sync: false
+      - key: BREVO_FROM_ADDRESS
+        sync: false
+      - key: BREVO_FROM_NAME
+
