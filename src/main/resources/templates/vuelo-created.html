@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 20px; }
+    .card { max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 8px; padding: 24px; background: #ffffff; }
+    .header { border-bottom: 2px solid #3b82f6; padding-bottom: 12px; margin-bottom: 20px; }
+    .header h2 { margin: 0; color: #1e3a8a; }
+    .details { width: 100%; border-collapse: collapse; margin-top: 16px; }
+    .details td { padding: 8px 12px; border-bottom: 1px solid #f1f5f9; }
+    .details td.label { font-weight: bold; width: 40%; color: #475569; }
+    .footer { margin-top: 24px; font-size: 12px; color: #64748b; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="header">
+      <h2>¡Confirmación de tu Vuelo! ✈️</h2>
+    </div>
+    <p>Hola, <strong>{{name}}</strong>,</p>
+    <p>Te confirmamos que se ha registrado tu vuelo exitosamente con los siguientes detalles:</p>
+    
+    <table class="details">
+      <tr><td class="label">ID de Vuelo:</td><td>{{id}}</td></tr>
+      <tr><td class="label">Aerolínea:</td><td>{{aerolinea}}</td></tr>
+      <tr><td class="label">Número de Vuelo:</td><td>{{numero}}</td></tr>
+      <tr><td class="label">Pasajero (Cliente):</td><td>{{cliente}}</td></tr>
+      <tr><td class="label">Asiento / Puesto:</td><td>{{puesto}}</td></tr>
+      <tr><td class="label">Origen:</td><td>{{aereopuertoSalida}}</td></tr>
+      <tr><td class="label">Fecha y Hora de Salida:</td><td>{{fechaSalida}}</td></tr>
+      <tr><td class="label">Destino:</td><td>{{aereopuertoLlegada}}</td></tr>
+      <tr><td class="label">Fecha y Hora de Llegada:</td><td>{{fechaLlegada}}</td></tr>
+      <tr><td class="label">Aeronave (Avión):</td><td>{{avion}}</td></tr>
+      <tr><td class="label">Piloto:</td><td>{{piloto}}</td></tr>
+      <tr><td class="label">Agencia de Viajes:</td><td>{{agenciaViajes}}</td></tr>
+      <tr><td class="label">Fecha de Compra:</td><td>{{fechaCompra}}</td></tr>
+      <tr><td class="label">Estado:</td><td><strong>{{estado}}</strong></td></tr>
+      <tr><td class="label">Valor Total:</td><td>${{valor}}</td></tr>
+    </table>
+
+    <div class="footer">
+      <p>Gracias por volar con nosotros. Si tienes alguna duda, contacta a tu agencia de viajes.</p>
+    </div>
+  </div>
+</body>
+</html>
