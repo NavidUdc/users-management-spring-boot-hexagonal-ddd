@@ -33,6 +33,7 @@ class CreateVueloServiceTest {
 
   @Mock private SaveVueloPort saveVueloPort;
   @Mock private GetUserByIdPort getUserByIdPort;
+  @Mock private EmailNotificationService emailNotificationService;
 
   private CreateVueloService service;
 
@@ -43,12 +44,13 @@ class CreateVueloServiceTest {
           new CreateVueloService(
               saveVueloPort,
               getUserByIdPort,
+              emailNotificationService,
               validatorFactory.getValidator());
     }
   }
 
   @Test
-  @DisplayName("execute() guarda el vuelo correctamente cuando el usuario existe")
+  @DisplayName("execute() guarda el vuelo correctamente y notifica al usuario por email")
   void shouldSaveVueloWhenUserExists() {
     final UserModel user =
         new UserModel(
@@ -106,6 +108,7 @@ class CreateVueloServiceTest {
     assertNotNull(result);
     assertEquals("v-001", result.getId().value());
     verify(saveVueloPort).save(any(VueloModel.class));
+    verify(emailNotificationService).notifyVueloAssigned(user, savedModel);
   }
 
   @Test
@@ -135,6 +138,7 @@ class CreateVueloServiceTest {
 
     assertThrows(UserNotFoundException.class, () -> service.execute(command));
     verify(saveVueloPort, never()).save(any());
+    verify(emailNotificationService, never()).notifyVueloAssigned(any(), any());
   }
 
   @Test
