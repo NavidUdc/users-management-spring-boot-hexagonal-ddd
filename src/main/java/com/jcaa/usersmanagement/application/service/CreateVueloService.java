@@ -6,6 +6,7 @@ import com.jcaa.usersmanagement.application.port.out.SaveVueloPort;
 import com.jcaa.usersmanagement.application.service.dto.command.CreateVueloCommand;
 import com.jcaa.usersmanagement.application.service.mapper.VueloApplicationMapper;
 import com.jcaa.usersmanagement.domain.exception.UserNotFoundException;
+import com.jcaa.usersmanagement.domain.model.UserModel;
 import com.jcaa.usersmanagement.domain.model.VueloModel;
 import com.jcaa.usersmanagement.domain.valueobject.UserId;
 import jakarta.validation.ConstraintViolation;
@@ -23,15 +24,20 @@ public class CreateVueloService implements CreateVueloUseCase {
 
   private final SaveVueloPort saveVueloPort;
   private final GetUserByIdPort getUserByIdPort;
+  private final EmailNotificationService emailNotificationService;
   private final Validator validator;
 
   @Override
   public VueloModel execute(final CreateVueloCommand command) {
     validateCommand(command);
-    ensureUserExists(command.usuarioId());
+    final UserModel user = findUserOrFail(command.usuarioId());
 
     final VueloModel vueloToSave = VueloApplicationMapper.fromCreateCommandToModel(command);
-    return saveVueloPort.save(vueloToSave);
+    final VueloModel savedVuelo = saveVueloPort.save(vueloToSave);
+
+    emailNotificationService.notifyVueloAssigned(user, savedVuelo);
+
+    return savedVuelo;
   }
 
   private void validateCommand(final CreateVueloCommand command) {
@@ -41,9 +47,9 @@ public class CreateVueloService implements CreateVueloUseCase {
     }
   }
 
-  private void ensureUserExists(final String usuarioId) {
+  private UserModel findUserOrFail(final String usuarioId) {
     final UserId userId = new UserId(usuarioId);
-    getUserByIdPort
+    return getUserByIdPort
         .getById(userId)
         .orElseThrow(() -> UserNotFoundException.becauseIdWasNotFound(userId.value()));
   }
