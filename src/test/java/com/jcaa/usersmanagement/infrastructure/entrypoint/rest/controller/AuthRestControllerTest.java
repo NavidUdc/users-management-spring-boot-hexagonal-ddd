@@ -48,6 +48,10 @@ class AuthRestControllerTest {
     assertThat(response.accessToken()).isEqualTo("signed.jwt.token");
     assertThat(response.tokenType()).isEqualTo("Bearer");
     assertThat(response.expiresIn()).isEqualTo(900L);
+    assertThat(response.userId()).isEqualTo("user-001");
+    assertThat(response.name()).isEqualTo("Test User");
+    assertThat(response.email()).isEqualTo(EMAIL);
+    assertThat(response.role()).isEqualTo("ADMIN");
     verify(loginUseCase).execute(command);
   }
 
