@@ -29,6 +29,12 @@ public class AuthRestController {
   public LoginRestResponse login(@Valid @RequestBody final LoginRestRequest request) {
     final UserModel user = loginUseCase.execute(new LoginCommand(request.email(), request.password()));
     return new LoginRestResponse(
-        jwtTokenService.generate(user), BEARER_TOKEN_TYPE, jwtTokenService.expirationSeconds());
+        jwtTokenService.generate(user),
+        BEARER_TOKEN_TYPE,
+        jwtTokenService.expirationSeconds(),
+        user.getId().value(),
+        user.getName().value(),
+        user.getEmail().value(),
+        user.getRole().name());
   }
 }
