@@ -10,6 +10,7 @@ import com.jcaa.usersmanagement.domain.enums.UserRole;
 import com.jcaa.usersmanagement.domain.enums.UserStatus;
 import com.jcaa.usersmanagement.domain.exception.EmailSenderException;
 import com.jcaa.usersmanagement.domain.model.UserModel;
+import com.jcaa.usersmanagement.domain.model.VueloModel;
 import com.jcaa.usersmanagement.domain.valueobject.UserEmail;
 import com.jcaa.usersmanagement.domain.valueobject.UserId;
 import com.jcaa.usersmanagement.domain.valueobject.UserName;
@@ -96,6 +97,27 @@ class EmailNotificationServiceTest {
                 dest ->
                     EMAIL.equals(dest.getDestinationEmail())
                         && dest.getSubject().contains("actualizada")));
+  }
+
+  @Test
+  @DisplayName("notifyVueloAssigned() invoca el puerto con los datos del vuelo y usuario")
+  void shouldSendVueloNotificationToCorrectEmail() {
+    final VueloModel vuelo =
+        VueloModel.fromPrimitives(
+            "v-100", "2026-11-06", "2026-11-10", "2026-11-10",
+            "Despegar", "Avianca", "AV123", "CONFIRMADO", 450000.0,
+            "John Arrieta", "12A", "Airbus A320", "BOG", "CTG", "Capitán Ramirez", "u-001");
+
+    service.notifyVueloAssigned(user, vuelo);
+
+    verify(emailSenderPort)
+        .send(
+            argThat(
+                dest ->
+                    EMAIL.equals(dest.getDestinationEmail())
+                        && dest.getSubject().contains("Avianca")
+                        && dest.getBody().contains("AV123")
+                        && dest.getBody().contains("12A")));
   }
 
   // ── re-lanzar EmailSenderException en notifyUserCreated

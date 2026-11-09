@@ -35,6 +35,7 @@ class UpdateVueloServiceTest {
   @Mock private UpdateVueloPort updateVueloPort;
   @Mock private GetVueloByIdPort getVueloByIdPort;
   @Mock private GetUserByIdPort getUserByIdPort;
+  @Mock private EmailNotificationService emailNotificationService;
 
   private UpdateVueloService service;
 
@@ -46,12 +47,13 @@ class UpdateVueloServiceTest {
               updateVueloPort,
               getVueloByIdPort,
               getUserByIdPort,
+              emailNotificationService,
               validatorFactory.getValidator());
     }
   }
 
   @Test
-  @DisplayName("execute() actualiza el vuelo exitosamente")
+  @DisplayName("execute() actualiza el vuelo exitosamente y notifica al usuario por email")
   void shouldUpdateVueloSuccessfully() {
     final VueloModel current =
         VueloModel.fromPrimitives(
@@ -101,6 +103,7 @@ class UpdateVueloServiceTest {
 
     final VueloModel result = service.execute(command);
     assertEquals("CONFIRMADO", result.getEstado().value());
+    verify(emailNotificationService).notifyVueloAssigned(user, updated);
   }
 
   @Test
@@ -129,6 +132,7 @@ class UpdateVueloServiceTest {
             .build();
 
     assertThrows(VueloNotFoundException.class, () -> service.execute(command));
+    verify(emailNotificationService, never()).notifyVueloAssigned(any(), any());
   }
 
   @Test
@@ -164,5 +168,6 @@ class UpdateVueloServiceTest {
             .build();
 
     assertThrows(UserNotFoundException.class, () -> service.execute(command));
+    verify(emailNotificationService, never()).notifyVueloAssigned(any(), any());
   }
 }

@@ -8,6 +8,7 @@ import com.jcaa.usersmanagement.application.service.dto.command.UpdateVueloComma
 import com.jcaa.usersmanagement.application.service.mapper.VueloApplicationMapper;
 import com.jcaa.usersmanagement.domain.exception.UserNotFoundException;
 import com.jcaa.usersmanagement.domain.exception.VueloNotFoundException;
+import com.jcaa.usersmanagement.domain.model.UserModel;
 import com.jcaa.usersmanagement.domain.model.VueloModel;
 import com.jcaa.usersmanagement.domain.valueobject.UserId;
 import jakarta.validation.ConstraintViolation;
@@ -24,16 +25,21 @@ public class UpdateVueloService implements UpdateVueloUseCase {
   private final UpdateVueloPort updateVueloPort;
   private final GetVueloByIdPort getVueloByIdPort;
   private final GetUserByIdPort getUserByIdPort;
+  private final EmailNotificationService emailNotificationService;
   private final Validator validator;
 
   @Override
   public VueloModel execute(final UpdateVueloCommand command) {
     validateCommand(command);
     ensureVueloExists(command.id());
-    ensureUserExists(command.usuarioId());
+    final UserModel user = findUserOrFail(command.usuarioId());
 
     final VueloModel vueloToUpdate = VueloApplicationMapper.fromUpdateCommandToModel(command);
-    return updateVueloPort.update(vueloToUpdate);
+    final VueloModel updatedVuelo = updateVueloPort.update(vueloToUpdate);
+
+    emailNotificationService.notifyVueloAssigned(user, updatedVuelo);
+
+    return updatedVuelo;
   }
 
   private void validateCommand(final UpdateVueloCommand command) {
@@ -49,9 +55,9 @@ public class UpdateVueloService implements UpdateVueloUseCase {
         .orElseThrow(() -> VueloNotFoundException.becauseIdWasNotFound(id));
   }
 
-  private void ensureUserExists(final String usuarioId) {
+  private UserModel findUserOrFail(final String usuarioId) {
     final UserId userId = new UserId(usuarioId);
-    getUserByIdPort
+    return getUserByIdPort
         .getById(userId)
         .orElseThrow(() -> UserNotFoundException.becauseIdWasNotFound(userId.value()));
   }
